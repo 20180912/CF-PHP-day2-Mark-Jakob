@@ -56,27 +56,17 @@
   <body>
 
   <!-- Exercise 2 -->
-  <form action="classwork.php" method="post">
+<!--   <form action="classwork.php" method="post">
     First name: <input type="text" name="first_name">
     Last name: <input type="text" name="last_name">
-    <input type="submit" name="submit">
-  </form>
-
-  <form action="classwork.php" method="get">
     Email: <input type="text" name="email">
-    <input type="submit" name="submit2">
-  </form>
+    <input type="submit" name="submit">
+  </form> -->
 
   <?php
     if(isset($_POST['submit'])) {
         if ($_POST["first_name"] || $_POST["last_name"]) {
             echo "Welcome" , $_POST["first_name"] . $_POST["last_name"];
-        }
-    }
-
-    if(isset($_GET['submit2'])) {
-        if ($_GET["email"]) {
-            echo $_GET["email"] . "has been added to Spam-newsletter";
         }
     }
 
@@ -88,17 +78,69 @@
 
     // Exercise 4
     $servername = "localhost";
-    $username = "root5";
+    $username = "root";
     $password = "";
+    $dbname = "hubbedischnubb";
     // Create connection
-    $conn = mysqli_connect($servername, $username, $password);
+    //commented vecause database already created
+    /*$conn = mysqli_connect($servername, $username, $password);*/    
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
     // Check connection
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-    echo "Connected successfully";
+    echo "Connected successfully" . "<br>";
+
+    $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
+    if  (mysqli_query($conn, $sql)) {
+        echo "Database $dbname created successfully! \n" . "<br>";
+    } else {
+        echo "Error creating database $dbname: " . mysqli_error($conn) . "<br>";
+    }
+    // Exercise 5
+    $sql = "CREATE TABLE IF NOT EXISTS testTable (
+    user_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    firstname VARCHAR(20) NOT NULL,
+    lastname VARCHAR(20) NOT NULL,
+    email VARCHAR(50),
+    reg_date TIMESTAMP
+    )" ;
+
+    if (mysqli_query($conn, $sql)) {
+    echo "Table Users created successfully"  . "\n" . "<br>";
+    } else {
+       echo  "Error creating table: " . mysqli_error($conn) . "\n" . "<br>";
+    }
+
+    // Exercise 6
+/*    $sql = "INSERT INTO testTable (firstname, lastname, email)
+    VALUES ('John', 'Doe', 'john@doe.com')";
+    if (mysqli_query($conn, $sql)) {
+        echo "New record created.\n";
+    } else {
+       echo  "Record creation error for: " . $sql . "\n" . mysqli_error($conn);
+    }*/
+
+    // Exercise 7
+
+    // Escape user inputs for security
+    $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
+    $last_name = mysqli_real_escape_string($conn, $_POST[ 'last_name']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    // attempt insert query execution
+    $sql = "INSERT INTO testTable (firstname, lastname, email) VALUES ('$first_name', '$last_name', '$email')";
+    if (mysqli_query($conn, $sql)) {
+        echo "<h1>New record created.<h1>";
+    } else {
+        echo "<h1>Record creation error for: </h1>" .
+             "<p>"  . $sql . "</p>" .
+             mysqli_error($conn);
+    }
+
 
     mysqli_close($conn);
+
+
   ?>
 
     
