@@ -56,12 +56,12 @@
   <body>
 
   <!-- Exercise 2 -->
-<!--   <form action="classwork.php" method="post">
+  <form action="classwork.php" method="post">
     First name: <input type="text" name="first_name">
     Last name: <input type="text" name="last_name">
     Email: <input type="text" name="email">
     <input type="submit" name="submit">
-  </form> -->
+  </form>
 
   <?php
     if(isset($_POST['submit'])) {
@@ -82,14 +82,14 @@
     $password = "";
     $dbname = "hubbedischnubb";
     // Create connection
-    //commented vecause database already created
-    /*$conn = mysqli_connect($servername, $username, $password);*/    
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+    $conn = mysqli_connect($servername, $username, $password);
     // Check connection
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
     echo "Connected successfully" . "<br>";
+
+
 
     $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
     if  (mysqli_query($conn, $sql)) {
@@ -98,6 +98,8 @@
         echo "Error creating database $dbname: " . mysqli_error($conn) . "<br>";
     }
     // Exercise 5
+  
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
     $sql = "CREATE TABLE IF NOT EXISTS testTable (
     user_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     firstname VARCHAR(20) NOT NULL,
@@ -130,16 +132,28 @@
     // attempt insert query execution
     $sql = "INSERT INTO testTable (firstname, lastname, email) VALUES ('$first_name', '$last_name', '$email')";
     if (mysqli_query($conn, $sql)) {
-        echo "<h1>New record created.<h1>";
+        echo "<h2>New record created.</h2>";
     } else {
         echo "<h1>Record creation error for: </h1>" .
              "<p>"  . $sql . "</p>" .
              mysqli_error($conn);
     }
 
+    // Exercise 8
+
+    $sql = "SELECT user_id, lastname, firstname, email, reg_date FROM testTable";
+    $result = mysqli_query($conn, $sql);
+    // fetch the next row (as long as there are any) into $row
+    while($row = mysqli_fetch_assoc($result)) {
+        printf("ID=%s %s %s %s %s<br>",
+            $row[ "user_id"], $row["firstname"],$row["lastname"], $row["email"], $row["reg_date"]);
+    }
+    echo  "<p> Fetched data successfully\n </p>";
+    // Free result set
+    mysqli_free_result($result);
+    // Close connection
 
     mysqli_close($conn);
-
 
   ?>
 
